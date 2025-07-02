@@ -16,9 +16,9 @@ CREATE TABLE users (
 /* ---------- Tabla: refresh_tokens ---------- */
 CREATE TABLE refresh_tokens (
   id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  user_id     INT UNSIGNED              NOT NULL,
-  token       VARCHAR(500)              NOT NULL,
-  expires_at  DATETIME                  NOT NULL,
+  user_id     CHAR(36) NOT NULL,  -- Cambiado a CHAR(36) para coincidir con users.id
+  token       VARCHAR(500) NOT NULL,
+  expires_at  DATETIME NOT NULL,
   created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_token (token),
   CONSTRAINT fk_rt_user
@@ -51,18 +51,16 @@ CREATE TABLE books (
 /* ---------- Tabla: loans ---------- */
 CREATE TABLE loans (
   id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  user_id      INT UNSIGNED           NOT NULL,
-  book_id      INT UNSIGNED           NOT NULL,
+  user_id      CHAR(36) NOT NULL,  -- Asegúrate que coincida con users.id
+  book_id      INT UNSIGNED NOT NULL,
   loan_date    DATETIME DEFAULT CURRENT_TIMESTAMP,
-  due_date     DATETIME,                                   -- fecha límite (opcional)
-  return_date  DATETIME,                                   -- NULL mientras no se devuelva
+  due_date     DATETIME,
+  return_date  DATETIME,
   created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_loan_user
     FOREIGN KEY (user_id) REFERENCES users(id)
     ON DELETE CASCADE,
   CONSTRAINT fk_loan_book
     FOREIGN KEY (book_id) REFERENCES books(id)
-    ON DELETE CASCADE,
-  CONSTRAINT chk_dates
-    CHECK (return_date IS NULL OR return_date >= loan_date)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB;
