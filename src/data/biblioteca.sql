@@ -28,7 +28,7 @@ CREATE TABLE refresh_tokens (
 
 /* ---------- Tabla: authors ---------- */
 CREATE TABLE authors (
-  id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id         CHAR(36) PRIMARY KEY,
   name       VARCHAR(100) NOT NULL,
   bio        TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -36,8 +36,8 @@ CREATE TABLE authors (
 
 /* ---------- Tabla: books ---------- */
 CREATE TABLE books (
-  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  author_id     INT UNSIGNED,
+  id            CHAR(36) NOT NULL PRIMARY KEY,
+  author_id     CHAR(36),
   title         VARCHAR(255)      NOT NULL,
   publish_year  INT,
   copies        INT UNSIGNED      NOT NULL DEFAULT 1,        -- total de ejemplares
@@ -51,8 +51,8 @@ CREATE TABLE books (
 /* ---------- Tabla: loans ---------- */
 CREATE TABLE loans (
   id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  user_id      CHAR(36) NOT NULL,  -- Asegúrate que coincida con users.id
-  book_id      INT UNSIGNED NOT NULL,
+  user_id      CHAR(36) NOT NULL,
+  book_id      CHAR(36) NOT NULL,  -- Cambiado de INT UNSIGNED a CHAR(36)
   loan_date    DATETIME DEFAULT CURRENT_TIMESTAMP,
   due_date     DATETIME,
   return_date  DATETIME,

@@ -1,42 +1,42 @@
 import express from 'express';
-import { createBookSchema, updateBookSchema } from '../utils/validators/bookValidator.js'
+import { createAuthorSchema, updateAuthorSchema } from '../utils/validators/authorValidator.js'
 import {
-  getAllBooks,
-  getBookById,
-  createBook,
-  updateBook,
-  deleteBook
-} from '../controllers/bookController.js';
+  getAllAuthors,
+  getAuthorById,
+  createAuthor,
+  updateAuthor,
+  deleteAuthor
+} from '../controllers/authorController.js';
 import { validate } from '../middlewares/validateMiddleware.js';
 import { authenticateToken } from '../middlewares/authMiddleware.js';
 import { authorizeRoles } from '../middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', authenticateToken, getAllBooks); 
-router.get('/:id', authenticateToken, getBookById);
+router.get('/', authenticateToken, getAllAuthors); 
+router.get('/:id', authenticateToken, getAuthorById);
 
 router.post(
   '/',
   authenticateToken,
   authorizeRoles('admin'),  
-  validate(createBookSchema),
-  createBook
+  validate(createAuthorSchema),
+  createAuthor
 );
 
 router.put(
   '/:id',
   authenticateToken,
   authorizeRoles('admin'),
-  validate(updateBookSchema),
-  updateBook
+  validate(updateAuthorSchema),
+  updateAuthor
 );
 
 router.delete(
   '/:id',
   authenticateToken,
   authorizeRoles('admin'),
-  deleteBook
+  deleteAuthor
 );
 
 export default router;

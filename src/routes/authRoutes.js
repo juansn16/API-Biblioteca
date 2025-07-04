@@ -6,11 +6,12 @@ import {
   login,
   refreshToken
 } from '../controllers/authController.js';
+import { optionalAuth } from '../middlewares/optionalAuth.js';
 
 const router = express.Router();
 
-router.post('/register', validate(registerSchema), register);       
+router.post('/register', optionalAuth, validate(registerSchema), register);       
 router.post('/login', validate(loginSchema), login);             
-router.post('/refresh', refreshToken);    
+router.post('/refresh',  refreshToken);    
 
 export default router;

@@ -14,7 +14,11 @@ export const registerSchema = z.object({
 
   password: z
     .string({ required_error: 'La contraseña es obligatoria' })
-    .min(6, 'La contraseña debe tener mínimo 6 caracteres')
+    .min(6, 'La contraseña debe tener mínimo 6 caracteres'),
+
+  role: z
+    .enum(['admin', 'user'])
+    .optional()
 });
 
 
