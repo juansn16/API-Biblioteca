@@ -21,7 +21,13 @@ export const createBookSchema = z.object({
   copies: z
     .number({ invalid_type_error: 'Las copias deben ser numéricas' })
     .int('Debe ser un número entero')
-    .min(1, 'Debe haber al menos una copia disponible')
+    .min(1, 'Debe haber al menos una copia disponible'),
+
+  cover_url: z
+    .string()
+    .url('La URL de la portada no es válida')
+    .max(500, 'La URL es demasiado larga')
+    .optional()
 });
 
 //Actualizar libro
@@ -30,7 +36,8 @@ export const updateBookSchema = z
     title: z.string().trim().min(2).max(255).optional(),
     author_id: z.string().uuid('ID de autor inválido').optional(),
     publish_year: z.number().int().min(1000).max(new Date().getFullYear()).optional(),
-    copies: z.number().int().min(1).optional()
+    copies: z.number().int().min(1).optional(),
+    cover_url: z.string().url('La URL de la portada no es válida').max(500).optional()
   })
   .refine(obj => Object.keys(obj).length > 0, {
     message: 'Debes enviar al menos un campo para actualizar'

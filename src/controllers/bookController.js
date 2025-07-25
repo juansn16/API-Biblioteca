@@ -63,11 +63,11 @@ export async function getBookById(req, res) {
 /* ---------- POST /books ---------- */
 export async function createBook(req, res) {
   try {
-    const { title, author_id, publish_year, copies } = req.body;
+    const { title, author_id, publish_year, copies, cover_url } = req.body;
     const bookId = uuidv4();
 
     await pool.execute(BookQueries.create,
-      [bookId, title, author_id, publish_year, copies]);
+      [bookId, title, author_id, publish_year, copies, cover_url]);
 
     res.status(201).json({ 
       success: true,
@@ -78,6 +78,7 @@ export async function createBook(req, res) {
         author_id,
         publish_year,
         copies,
+        cover_url,
         status: 'active'
       },
       details: `El libro "${title}" ha sido registrado en el sistema con ${copies} copias disponibles`
@@ -97,7 +98,7 @@ export async function createBook(req, res) {
 export async function updateBook(req, res) {
   try {
     const { id } = req.params;
-    const { title, author_id, publish_year, copies } = req.body;
+    const { title, author_id, publish_year, copies, cover_url } = req.body;
 
     // Primero obtenemos el libro actual para mostrar cambios
     const [[currentBook]] = await pool.execute(BookQueries.getById, [id]);
@@ -110,7 +111,7 @@ export async function updateBook(req, res) {
     }
 
     const [result] = await pool.execute(BookQueries.update,
-      [title, author_id, publish_year, copies, id]);
+      [title, author_id, publish_year, copies, cover_url, id]);
 
     // Obtenemos el libro actualizado para la respuesta
     const [[updatedBook]] = await pool.execute(BookQueries.getById, [id]);
@@ -123,7 +124,8 @@ export async function updateBook(req, res) {
         title: { from: currentBook.title, to: title },
         author_id: { from: currentBook.author_id, to: author_id },
         publish_year: { from: currentBook.publish_year, to: publish_year },
-        copies: { from: currentBook.copies, to: copies }
+        copies: { from: currentBook.copies, to: copies },
+        cover_url: { from: currentBook.cover_url, to: cover_url }
       },
       details: `El libro "${currentBook.title}" (ID: ${id}) ha sido actualizado`
     });

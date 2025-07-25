@@ -19,7 +19,7 @@ export async function createLoan(req, res) {
         details: `No existe un libro con ID ${book_id}`
       });
     }
-    if (book.copies < 1) {
+    if (book.available_copies < 1) {
       await conn.rollback();
       return res.status(400).json({ 
         success: false,
@@ -27,7 +27,7 @@ export async function createLoan(req, res) {
         details: {
           bookId: book_id,
           title: book.title,
-          availableCopies: book.copies
+          availableCopies: book.available_copies
         }
       });
     }
@@ -36,8 +36,7 @@ export async function createLoan(req, res) {
     const [loanResult] = await conn.execute(LoanQueries.create, [userId, book_id, due_date]);
     const loanId = loanResult.insertId;
 
-    /* 3. Descontar una copia */
-    await conn.execute(BookQueries.decrementCopies, [book_id]);
+    // Ya no se descuenta una copia del total, solo se crea el préstamo
 
     await conn.commit();
     res.status(201).json({ 
@@ -50,7 +49,8 @@ export async function createLoan(req, res) {
         userId,
         dueDate: due_date,
         status: 'active',
-        availableCopies: book.copies - 1
+        devuelto: false,
+        availableCopies: book.available_copies - 1
       }
     });
   } catch (err) {
@@ -88,8 +88,7 @@ export async function returnLoan(req, res) {
     /* 2. Averiguar qué libro corresponde al préstamo */
     const [[loan]] = await conn.execute(LoanQueries.getBookIdByLoan, [id]);
 
-    /* 3. Sumar una copia al inventario */
-    await conn.execute(BookQueries.incrementCopies, [loan.book_id]);
+    // Ya no se suma una copia al total, solo se marca como devuelto
 
     // Obtener información actualizada del libro
     const [[book]] = await conn.execute(BookQueries.getById, [loan.book_id]);
@@ -103,8 +102,9 @@ export async function returnLoan(req, res) {
         bookId: loan.book_id,
         bookTitle: book.title,
         returnDate: return_date,
-        availableCopies: book.copies,
-        status: 'returned'
+        availableCopies: book.available_copies,
+        status: 'returned',
+        devuelto: true
       }
     });
   } catch (err) {
@@ -146,6 +146,7 @@ export async function getUserLoans(req, res) {
     }
 
     // Respuesta exitosa con los préstamos
+    // Se puede incluir el campo devuelto en la respuesta si se desea
     res.json({
       success: true,
       message: 'Préstamos obtenidos exitosamente',

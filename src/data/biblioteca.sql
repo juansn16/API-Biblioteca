@@ -41,6 +41,7 @@ CREATE TABLE books (
   title         VARCHAR(255)      NOT NULL,
   publish_year  INT,
   copies        INT UNSIGNED      NOT NULL DEFAULT 1,        -- total de ejemplares
+  cover_url     VARCHAR(500),     -- URL de la portada del libro
   created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at    DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_book_author
@@ -56,6 +57,7 @@ CREATE TABLE loans (
   loan_date    DATETIME DEFAULT CURRENT_TIMESTAMP,
   due_date     DATETIME,
   return_date  DATETIME,
+  devuelto     BOOLEAN NOT NULL DEFAULT FALSE, -- Nuevo campo para indicar si fue devuelto
   created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_loan_user
     FOREIGN KEY (user_id) REFERENCES users(id)
